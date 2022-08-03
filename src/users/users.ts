@@ -3,11 +3,11 @@ import express, { Request, Response } from 'express';
 const userRouter = express.Router();
 
 userRouter.get('/login', (req: Request, res: Response) => {
-  res.send('login');
+	res.send('login');
 });
 
 userRouter.post('/register', (req: Request, res: Response) => {
-  res.send('register');
+	res.send('register');
 });
 
 export { userRouter };
