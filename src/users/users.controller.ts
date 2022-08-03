@@ -3,10 +3,12 @@ import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller';
 import { ILogger } from '../logger/logger.interface';
 import { TYPES } from '../types';
-import 'reflect-metadata'
+import 'reflect-metadata';
+import { IUserController } from './users.controller.interface';
+import { HTTPError } from '../errors/http-error.class';
 
 @injectable()
-export class UserController extends BaseController {
+export class UserController extends BaseController implements IUserController {
   // call in constructor bind routes
   constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
     super(loggerService);
@@ -17,8 +19,8 @@ export class UserController extends BaseController {
   }
 
   login(req: Request, res: Response, next: NextFunction) {
-    this.ok(res, 'login')
-    // next(new HTTPError(401, 'Error created', 'login')); // For testing
+    // this.ok(res, 'login')
+    next(new HTTPError(401, 'Error created', 'login')); // For testing
   }
 
   register(req: Request, res: Response, next: NextFunction) {
