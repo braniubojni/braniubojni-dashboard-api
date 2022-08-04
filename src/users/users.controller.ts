@@ -1,16 +1,23 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import 'reflect-metadata';
 import { BaseController } from '../common/base.controller';
+import { HTTPError } from '../errors/http-error.class';
 import { ILogger } from '../logger/logger.interface';
 import { TYPES } from '../types';
-import 'reflect-metadata';
+import { UserLoginDto } from './dto/user-login.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
+import { User } from './user.entity';
 import { IUserController } from './users.controller.interface';
-import { HTTPError } from '../errors/http-error.class';
+import { UserService } from './users.service';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
 	// call in constructor bind routes
-	constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+	constructor(
+		@inject(TYPES.ILogger) private readonly loggerService: ILogger,
+		@inject(TYPES.UserService) private readonly userService: UserService,
+	) {
 		super(loggerService);
 		this.bindRoutes([
 			{ name: 'users', path: '/register', method: 'post', func: this.register },
@@ -18,12 +25,20 @@ export class UserController extends BaseController implements IUserController {
 		]);
 	}
 
-	login(req: Request, res: Response, next: NextFunction): void {
-		// this.ok(res, 'login')
+	login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
+		console.log(req.body);
 		next(new HTTPError(401, 'Error created', 'login')); // For testing
 	}
 
-	register(req: Request, res: Response, next: NextFunction): void {
-		this.ok(res, 'register');
+	async register(
+		{ body }: Request<{}, {}, UserRegisterDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const newUser = await this.userService.createUser(body);
+
+		if (!newUser) return next(new HTTPError(422, 'User already exists'));
+
+		this.ok(res, { email: newUser.email, name: newUser.name });
 	}
 }
