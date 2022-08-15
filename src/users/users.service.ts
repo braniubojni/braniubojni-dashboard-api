@@ -6,7 +6,7 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { User } from './user.entity';
 import { IUsersRepository } from './users.repository.interface';
-import { IUserService } from './users.service.interface';
+import { IAdvandedError, IUserService } from './users.service.interface';
 
 @injectable()
 export class UserService implements IUserService {
@@ -26,7 +26,15 @@ export class UserService implements IUserService {
 		return await this.usersRepository.create(newUser);
 	}
 
-	async validateUser(dto: UserLoginDto): Promise<boolean> {
-		return true;
+	async loginUser({ email, password }: UserLoginDto): Promise<UserModel | IAdvandedError> {
+		const user = await this.usersRepository.find(email);
+		if (!user) {
+			return { code: 404, msg: 'User not found' };
+		}
+		const equalPass = await User.verifyPasswd(password, user.password);
+		if (!equalPass) {
+			return { code: 403, msg: 'Password is incorrect' };
+		}
+		return user;
 	}
 }

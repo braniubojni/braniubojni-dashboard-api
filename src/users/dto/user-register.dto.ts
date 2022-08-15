@@ -1,7 +1,7 @@
 import { IsEmail, IsString, Max, Min, MinLength } from 'class-validator';
 
 export class UserRegisterDto {
-	@IsEmail({}, { message: 'Invalida email' })
+	@IsEmail({}, { message: 'Invalid email' })
 	email: string;
 
 	@MinLength(5)

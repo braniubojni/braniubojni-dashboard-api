@@ -1,4 +1,4 @@
-import { hash } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 
 export class User {
 	private _password: string;
@@ -18,5 +18,9 @@ export class User {
 
 	public async setPassword(pass: string, salt: string): Promise<void> {
 		this._password = await hash(pass, +salt);
+	}
+
+	public static async verifyPasswd(plain: string, hash: string): Promise<boolean> {
+		return await compare(plain, hash);
 	}
 }
