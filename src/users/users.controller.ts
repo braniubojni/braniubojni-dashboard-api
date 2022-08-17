@@ -42,11 +42,13 @@ export class UserController extends BaseController implements IUserController {
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const logged = await this.userService.loginUser(body);
-
-		if ('code' in logged) return next(new HTTPError(logged.code, logged.msg));
-
-		this.ok(res, { email: logged.email, id: logged.id });
+		// const logged = await this.userService.loginUser(body);
+		// if ('code' in logged) return next(new HTTPError(logged.code, logged.msg));
+		const result = await this.userService.validateUser(body);
+		if (!result) {
+			return next(new HTTPError(401, 'Autharization error', 'login'));
+		}
+		this.ok(res, {});
 	}
 
 	async register(

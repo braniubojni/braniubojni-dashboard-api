@@ -26,6 +26,18 @@ export class UserService implements IUserService {
 		return await this.usersRepository.create(newUser);
 	}
 
+	async validateUser({ email, password }: UserLoginDto): Promise<boolean> {
+		const existedUser = await this.usersRepository.find(email);
+		if (!existedUser) {
+			return false;
+		}
+		const newUser = new User(existedUser.email, existedUser.name, existedUser.password);
+
+		return newUser.comparePassword(password);
+	}
+
+	/** 
+	 * My implementation of user login
 	async loginUser({ email, password }: UserLoginDto): Promise<UserModel | IAdvandedError> {
 		const user = await this.usersRepository.find(email);
 		if (!user) {
@@ -37,4 +49,5 @@ export class UserService implements IUserService {
 		}
 		return user;
 	}
+	 */
 }

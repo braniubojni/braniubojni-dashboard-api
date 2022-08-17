@@ -9,5 +9,6 @@ export interface IAdvandedError {
 
 export interface IUserService {
 	createUser: (dto: UserRegisterDto) => Promise<UserModel | null>;
-	loginUser: (dto: UserLoginDto) => Promise<UserModel | IAdvandedError>;
+	validateUser: (dto: UserLoginDto) => Promise<boolean>;
+	// loginUser: (dto: UserLoginDto) => Promise<UserModel | IAdvandedError>;
 }

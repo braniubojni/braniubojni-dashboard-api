@@ -11,6 +11,7 @@
 		"lint": "eslint ./src/** --fix",
 		"build": "rm -rf dist && tsc",
 		"gen": "prisma generate",
+		"migrate": "prisma migrate dev",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Erik Harutyunyan",
