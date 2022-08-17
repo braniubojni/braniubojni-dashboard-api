@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import { sign } from 'jsonwebtoken';
 import 'reflect-metadata';
 import { BaseController } from '../common/base.controller';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { IConfigService } from '../config/config.service.interface';
 import { HTTPError } from '../errors/http-error.class';
 import { ILogger } from '../logger/logger.interface';
 import { TYPES } from '../types';
@@ -17,6 +19,7 @@ export class UserController extends BaseController implements IUserController {
 	constructor(
 		@inject(TYPES.ILogger) private readonly loggerService: ILogger,
 		@inject(TYPES.UserService) private readonly userService: UserService,
+		@inject(TYPES.ConfigService) private readonly configService: IConfigService,
 	) {
 		super(loggerService);
 		this.bindRoutes([
@@ -48,7 +51,8 @@ export class UserController extends BaseController implements IUserController {
 		if (!result) {
 			return next(new HTTPError(401, 'Autharization error', 'login'));
 		}
-		this.ok(res, {});
+		const jwt = await this.signJWT(body.email, this.configService.get('SECRET') || 'secret-789');
+		this.ok(res, { jwt });
 	}
 
 	async register(
@@ -61,5 +65,26 @@ export class UserController extends BaseController implements IUserController {
 		if (!newUser) return next(new HTTPError(422, 'User already exists'));
 
 		this.ok(res, { email: newUser.email, id: newUser.id });
+	}
+
+	private signJWT(email: string, secret: string): Promise<string> {
+		return new Promise<string>((res, rej) => {
+			sign(
+				{
+					email,
+					iat: Math.floor(Date.now() / 1000),
+				},
+				secret,
+				{
+					algorithm: 'HS256',
+				},
+				(err, token) => {
+					if (err) {
+						rej(err);
+					}
+					res(token as string);
+				},
+			);
+		});
 	}
 }
