@@ -36,6 +36,10 @@ export class UserService implements IUserService {
 		return newUser.comparePassword(password);
 	}
 
+	async getUserInfo(email: string): Promise<UserModel | null> {
+		return this.usersRepository.find(email);
+	}
+
 	/** 
 	 * My implementation of user login
 	async loginUser({ email, password }: UserLoginDto): Promise<UserModel | IAdvandedError> {
