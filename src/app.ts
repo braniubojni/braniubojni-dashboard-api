@@ -52,4 +52,8 @@ export class App {
 		const PORT = this.port;
 		this.server = this.app.listen(PORT, () => this.logger.log(`Server on ${PORT}`));
 	}
+
+	public close(): void {
+		this.server.close();
+	}
 }

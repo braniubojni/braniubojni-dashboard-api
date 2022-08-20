@@ -40,6 +40,13 @@ export class UserService implements IUserService {
 		return this.usersRepository.find(email);
 	}
 
+	async deleteUser(email: string): Promise<UserModel | null> {
+		const userInfo = await this.getUserInfo(email);
+		if (!userInfo) return null;
+
+		return this.usersRepository.delete(userInfo.id);
+	}
+
 	/** 
 	 * My implementation of user login
 	async loginUser({ email, password }: UserLoginDto): Promise<UserModel | IAdvandedError> {
