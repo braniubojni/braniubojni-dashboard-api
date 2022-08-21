@@ -9,7 +9,7 @@
 		"dev": "nodemon",
 		"dev:inspect": "nodemon -e ts,json --exec node --inspect=localhost:9222 -r ts-node/register src/main.ts",
 		"test": "jest",
-		"test:e2e": "jest --config jest.e2e.config.ts",
+		"test:e2e": "jest --config jest.e2e.config.ts --coverage",
 		"lint": "eslint ./src/** --fix",
 		"build": "rm -rf dist && tsc",
 		"gen": "prisma generate",

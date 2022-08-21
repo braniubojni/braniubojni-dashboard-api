@@ -51,7 +51,7 @@ export class UserController extends BaseController implements IUserController {
 				path: '/delete',
 				method: 'delete',
 				func: this.delete,
-				middlewares: [],
+				middlewares: [new AuthGuard()],
 			},
 		]);
 	}
@@ -89,8 +89,8 @@ export class UserController extends BaseController implements IUserController {
 		if (!userInfo) {
 			return next(new HTTPError(404, NOT_FOUND));
 		}
-		console.log('OK');
-		this.ok(res, { email: user });
+
+		this.ok(res, { email: userInfo.email, name: userInfo.name });
 	}
 
 	async delete({ body }: Request, res: Response, next: NextFunction): Promise<void> {
