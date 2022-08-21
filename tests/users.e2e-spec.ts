@@ -5,6 +5,7 @@ import { UserModel } from '@prisma/client';
 import { ALREADY_EXISTS, AUTH_ERROR, NOT_FOUND } from '../src/users/users.constants';
 
 let application: App;
+let jwt = '';
 const enum status {
 	CREATED = 200,
 	NOT_FOUND = 404,
@@ -12,7 +13,7 @@ const enum status {
 	EXISTS = 422,
 }
 const userDto = {
-	email: 'test@ok.ru', // 'test' + Math.random() + '@gmail.ru',
+	email: 'test' + Math.random() + '@gmail.ru',
 	password: 'Abcd1234',
 	name: 'MockUser',
 };
@@ -59,6 +60,15 @@ describe('[Users]', () => {
 				expect(body).not.toBeNull();
 				expect(body).not.toBeUndefined();
 				expect(body.jwt).toBeDefined();
+				jwt = body.jwt;
+			});
+	});
+
+	it('Info - success', async () => {
+		await request(application.app)
+			.get('/users/info')
+			.then(({ body }: request.Response) => {
+				console.log(body, '<-- should be issue');
 			});
 	});
 

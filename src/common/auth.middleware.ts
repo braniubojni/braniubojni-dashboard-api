@@ -8,18 +8,19 @@ export class AuthMiddleware implements IMiddleware {
 	execute(req: Request, res: Response, next: NextFunction): void {
 		if (req.headers.authorization) {
 			const [bearer, token] = req.headers.authorization.split(' ');
-			if (!bearer || !token) return next();
+			if (!bearer || !token) next();
 
 			verify(token, this.secret, (err, payload) => {
 				if (err) {
 					next();
-				}
-				if (payload && typeof payload !== 'string') {
+				} else if (payload && typeof payload !== 'string') {
 					req.user = payload.email;
+					console.log(req.user, '<-- payload 1\n');
 					next();
 				}
 			});
+		} else {
+			next();
 		}
-		next();
 	}
 }

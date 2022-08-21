@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { sign } from 'jsonwebtoken';
 import 'reflect-metadata';
+import { AuthGuard } from '../common/auth.guard';
 import { BaseController } from '../common/base.controller';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { IConfigService } from '../config/config.service.interface';
@@ -43,7 +44,7 @@ export class UserController extends BaseController implements IUserController {
 				path: '/info',
 				method: 'get',
 				func: this.info,
-				middlewares: [],
+				middlewares: [new AuthGuard()],
 			},
 			{
 				name: 'users',
@@ -79,15 +80,17 @@ export class UserController extends BaseController implements IUserController {
 
 		if (!newUser) return next(new HTTPError(422, ALREADY_EXISTS));
 
-		this.ok(res, { email: newUser.email, id: newUser.id });
+		this.created(res, { email: newUser.email, id: newUser.id });
 	}
 
 	async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
 		const userInfo = await this.userService.getUserInfo(user);
 
-		if (!userInfo) return next(new HTTPError(404, NOT_FOUND));
-
-		this.ok(res, { email: userInfo.email, name: userInfo.name });
+		if (!userInfo) {
+			return next(new HTTPError(404, NOT_FOUND));
+		}
+		console.log('OK');
+		this.ok(res, { email: user });
 	}
 
 	async delete({ body }: Request, res: Response, next: NextFunction): Promise<void> {
